@@ -20,28 +20,23 @@ def ridge(data):
 #梯度下降法实现Lasso回归    
 def lasso(data):  
 
+    #超参数
+    lr = 1e-10 #学习率
+    epoch = 10000
+    alpha = 0.1
+
     X, y = read_data()
 
-    # 超参数
-    alpha = 0.1
-    max_iter = 10000
-    lr = 1e-10
+   #初始化
+    weight = np.zeros(X.shape[1])
 
-    # 初始化w
-    w = np.zeros(X.shape[1])
+    #梯度下降
+    for i in range(epoch):
+        gradient = np.dot(X.T, (np.dot(X, weight) - y)) + alpha * np.sign(weight)
+        weight -= lr * gradient
 
-    # 梯度下降
-    for i in range(max_iter):
-        # 梯度
-        grad = np.matmul(X.T, np.matmul(X, w) - y) / X.shape[0] + alpha * np.sign(w)
-        # 防止梯度爆炸
-        grad_norm = np.linalg.norm(grad)
-        if grad_norm > 1:
-            grad /= grad_norm
-        # 更新梯度
-        w =w- lr * grad
-
-    return np.matmul(w, data)
+    return weight @ data
+   
 
 def read_data(path='./data/exp02/'):
     x = np.load(path + 'X_train.npy')
