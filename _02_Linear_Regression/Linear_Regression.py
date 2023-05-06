@@ -13,16 +13,9 @@ def ridge(data):
 
     X, y = read_data()
 
-    # 样本数量和特征维度
-    N, D = X.shape
+    weight = np.matmul(np.linalg.inv(np.matmul(X.T, X)), np.matmul(X.T, y))
 
-    # 超参数
-    alpha = 0.05
-
-    A = np.eye(D) * alpha
-    w_ridge = np.linalg.inv(X.T * X + alpha * A) @ X.T * y
-
-    return w_ridge * data
+    return weight @ data
 
 #梯度下降法实现Lasso回归    
 def lasso(data):  
@@ -30,15 +23,15 @@ def lasso(data):
     X, y = read_data()
 
     # 超参数
-    alpha = 0.01
-    epoch = 10000
-    lr = 0.001
+    alpha = 0.1
+    max_iter = 10000
+    lr = 1e-10
 
     # 初始化w
     w = np.zeros(X.shape[1])
 
     # 梯度下降
-    for i in range(epoch):
+    for i in range(max_iter):
         # 梯度
         grad = np.matmul(X.T, np.matmul(X, w) - y) / X.shape[0] + alpha * np.sign(w)
         # 防止梯度爆炸
@@ -46,7 +39,7 @@ def lasso(data):
         if grad_norm > 1:
             grad /= grad_norm
         # 更新梯度
-        w -= lr * grad
+        w =w- lr * grad
 
     return np.matmul(w, data)
 
